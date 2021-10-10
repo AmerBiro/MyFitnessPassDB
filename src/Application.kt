@@ -3,6 +3,7 @@ package com.noteapp
 import com.noteapp.database.collections.User
 import com.noteapp.database.queries.registerUser
 import com.noteapp.database.routes.registerRoute
+import com.noteapp.routes.loginRoute
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
@@ -23,6 +24,7 @@ fun Application.module(testing: Boolean = false) {
     install(CallLogging)
     install(Routing){
         registerRoute()
+        loginRoute()
     }
     // make the server respindes witha a certain content
     install(ContentNegotiation) {
@@ -31,24 +33,6 @@ fun Application.module(testing: Boolean = false) {
             setPrettyPrinting()
         }
     }
-
-//    CoroutineScope(Dispatchers.IO).launch {
-//        registerUser(
-//            User(
-//                "Amer",
-//                "Biro",
-//                "amer.biro@gmail.com",
-//                "123456",
-//                "male",
-//                "07/04/1990",
-//                175.0,
-//                68.0,
-//                "image",
-//                "09/10/2021",
-//                "10/10/2021"
-//            )
-//        )
-//    }
 
 
 }
