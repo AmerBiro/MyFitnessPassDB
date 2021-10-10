@@ -14,6 +14,7 @@ data class User(
     val weight: Double,
     val imageURL: String,
     val creationDate: Long,
+    val lastUpdateDate: Long,
     @BsonId
     val id: String = ObjectId().toString()
 )

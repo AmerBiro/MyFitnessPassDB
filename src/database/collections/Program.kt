@@ -6,9 +6,12 @@ import org.bson.types.ObjectId
 data class Program(
     val programName: String,
     val description: String,
+//    val note: String,
     val days: Int,
-    val exercises: Int,
+    val fitness: String,
+    val coach: String,
     val creationDate: Long,
+    val lastUpdateDate: Long,
     val startDate: Long,
     val endDate: Long,
     val owner: List<String>,
