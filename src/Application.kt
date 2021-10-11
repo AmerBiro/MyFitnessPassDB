@@ -1,56 +1,64 @@
-package com.noteapp
+package com.androiddevs
 
-import com.noteapp.database.collections.User
-import com.noteapp.database.queries.checkPasswordForEmail
-import com.noteapp.database.queries.registerUser
-import com.noteapp.database.routes.registerRoute
-import com.noteapp.routes.loginRoute
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.features.*
-import io.ktor.gson.*
-import io.ktor.routing.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
+import com.androiddevs.data.queries.checkPasswordForEmail
+import com.androiddevs.routes.user.loginRoute
+import com.androiddevs.routes.program.programRoutes
+import com.androiddevs.routes.user.registerRoute
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.basic
+import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.gson.gson
+import io.ktor.routing.Routing
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    // default header which contains useful info about the requests to the server such as date
     install(DefaultHeaders)
-    // have a log over HTTP requests
     install(CallLogging)
-    install(Routing){
-        registerRoute()
-        loginRoute()
-    }
-    // make the server respindes witha a certain content
     install(ContentNegotiation) {
-        // JSON response and requests from server
         gson {
             setPrettyPrinting()
         }
     }
-
-    install(Authentication){
+    install(Authentication) {
         configureAuth()
     }
-
+    install(Routing) {
+        registerRoute()
+        loginRoute()
+        programRoutes()
+    }
 }
 
-private fun Authentication.Configuration.configureAuth(){
+private fun Authentication.Configuration.configureAuth() {
     basic {
-        realm = "MyFitnessPass Server"
+        realm = "Note Server"
         validate { credentials ->
             val email = credentials.name
             val password = credentials.password
-            if (checkPasswordForEmail(email, password)){
+            if(checkPasswordForEmail(email, password)) {
                 UserIdPrincipal(email)
-            }else null
+            } else null
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

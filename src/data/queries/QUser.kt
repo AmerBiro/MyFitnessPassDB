@@ -1,26 +1,24 @@
-package com.noteapp.database.queries
+package com.androiddevs.data.queries
 
-import com.noteapp.database.collections.User
-import io.ktor.html.*
+import com.androiddevs.data.collections.User
+import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 private val client = KMongo.createClient().coroutine
-private val database = client.getDatabase("MyFitnessPass")
+private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val users = database.getCollection<User>()
 
-suspend fun registerUser(user: User): Boolean{
+suspend fun registerUser(user: User): Boolean {
     return users.insertOne(user).wasAcknowledged()
 }
 
-suspend fun checkIfUserExists(email: String): Boolean{
+suspend fun checkIfUserExists(email: String): Boolean {
     return users.findOne(User::email eq email) != null
 }
 
-suspend fun checkPasswordForEmail(email: String, passwordToBeChecked: String): Boolean{
+suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
     val actualPassword = users.findOne(User::email eq email)?.password ?: return false
-    return actualPassword == passwordToBeChecked
+    return actualPassword == passwordToCheck
 }
-
-

@@ -1,4 +1,4 @@
-package com.noteapp.database.requests
+package com.androiddevs.data.requests
 
 data class AccountRequest(
     val email: String,
