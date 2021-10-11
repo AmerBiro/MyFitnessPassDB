@@ -22,10 +22,10 @@ fun Route.programRoutes() {
     route("/getPrograms") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
+                val userId = call.principal<UserIdPrincipal>()!!.name
 
-                val notes = getPrograms(email)
-                call.respond(OK, notes)
+                val programs = getPrograms(userId)
+                call.respond(OK, programs)
             }
         }
     }
