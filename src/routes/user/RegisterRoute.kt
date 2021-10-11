@@ -33,7 +33,7 @@ fun Route.registerRoute() {
                     call.respond(OK, SimpleResponse(false, "Error during creating account"))
                 }
             } else {
-                call.respond(OK, SimpleResponse(false, "Thus email already exists"))
+                call.respond(OK, SimpleResponse(false, "This email already exists"))
             }
         }
     }

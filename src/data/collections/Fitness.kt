@@ -12,6 +12,7 @@ data class Fitness(
     val website: String,
     val creationDate: Long,
     val lastUpdateDate: Long,
+    val ownersId: List<String>,
     @BsonId
     val id: String = ObjectId().toString()
 )

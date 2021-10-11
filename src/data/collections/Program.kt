@@ -13,7 +13,7 @@ data class Program(
     val lastUpdateDate: Long,
     val startDate: Long,
     val endDate: Long,
-    val owners: List<String>,
+    val ownersId: List<String>,
     val imageURL: String,
     @BsonId
     val id: String = ObjectId().toString()

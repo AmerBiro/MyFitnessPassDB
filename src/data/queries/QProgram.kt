@@ -12,8 +12,8 @@ private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val programs = database.getCollection<Program>()
 
-suspend fun getPrograms(email: String): List<Program> {
-    return programs.find(Program::owners contains email).toList()
+suspend fun getPrograms(userId: String): List<Program> {
+    return programs.find(Program::ownersId contains userId).toList()
 }
 
 suspend fun createUpdateProgram(program: Program): Boolean{
@@ -24,3 +24,4 @@ suspend fun createUpdateProgram(program: Program): Boolean{
         programs.insertOne(program).wasAcknowledged()
     }
 }
+
