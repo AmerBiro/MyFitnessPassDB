@@ -42,6 +42,8 @@ fun Application.module(testing: Boolean = false) {
         programNotesRoutes()
         programDayRoutes()
         exerciseRoutes()
+        setsRoutes()
+
     }
 }
 
