@@ -1,9 +1,8 @@
 package com.androiddevs
 
 import com.androiddevs.data.queries.checkPasswordForEmail
-import com.androiddevs.routes.coachRoutes
+import com.androiddevs.routes.*
 import com.androiddevs.routes.fitness.fitnessRoutes
-import com.androiddevs.routes.infoRoutes
 import com.androiddevs.routes.user.loginRoute
 import com.androiddevs.routes.program.programRoutes
 import com.androiddevs.routes.user.registerRoute
@@ -40,6 +39,9 @@ fun Application.module(testing: Boolean = false) {
         fitnessRoutes()
         coachRoutes()
         infoRoutes()
+        programNotesRoutes()
+        programDayRoutes()
+        exerciseRoutes()
     }
 }
 
