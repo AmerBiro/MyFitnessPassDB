@@ -1,4 +1,4 @@
-package com.androiddevs.data.requests
+package com.androiddevs.data.requests.program
 
 class RemoveProgramFromSharedWithMeListRequest(
     val programId: String,

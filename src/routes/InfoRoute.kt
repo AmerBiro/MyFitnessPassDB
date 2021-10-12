@@ -1,10 +1,8 @@
 package com.androiddevs.routes
 
 import com.androiddevs.data.queries.createUpdateInfo
-import com.androiddevs.data.queries.createUpdateProgram
 import com.androiddevs.data.queries.getInfo
 import com.noteapp.database.collections.Info
-import com.noteapp.database.collections.Program
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*

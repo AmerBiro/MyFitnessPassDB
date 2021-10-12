@@ -1,10 +1,8 @@
 package com.androiddevs.routes.fitness
 
 import com.androiddevs.data.queries.createUpdateFitness
-import com.androiddevs.data.queries.createUpdateProgram
 import com.androiddevs.data.queries.getFitness
 import com.noteapp.database.collections.Fitness
-import com.noteapp.database.collections.Program
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*

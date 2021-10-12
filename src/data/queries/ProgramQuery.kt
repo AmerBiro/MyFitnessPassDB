@@ -13,21 +13,17 @@ private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val programs = database.getCollection<Program>()
 private val users = database.getCollection<User>()
 
-suspend fun getOwnPrograms(owner: String): List<Program> {
-    return programs.find(Program::owner eq owner).toList()
+
+suspend fun createProgram(program: Program): Boolean {
+    return programs.insertOne(program).wasAcknowledged()
 }
 
-suspend fun getSharedProgramsWIthMe(email: String): List<Program> {
-    return programs.find(Program::hasAccess contains email).toList()
-}
-
-suspend fun createUpdateProgram(program: Program): Boolean {
+suspend fun updateProgram(program: Program): Boolean {
     val programExists = programs.findOneById(program.id) != null
-    return if (programExists) {
-        programs.updateOneById(program.id, program).wasAcknowledged()
-    } else {
-        programs.insertOne(program).wasAcknowledged()
+    if (programExists) {
+        return programs.updateOneById(program.id, program).wasAcknowledged()
     }
+    return false
 }
 
 suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
@@ -40,6 +36,15 @@ suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
         return updateResult.wasAcknowledged()
     } ?: return false
 }
+
+suspend fun getOwnPrograms(owner: String): List<Program> {
+    return programs.find(Program::owner eq owner).toList()
+}
+
+suspend fun getProgramsSharedWIthMe(email: String): List<Program> {
+    return programs.find(Program::hasAccess contains email).toList()
+}
+
 
 suspend fun deleteProgram(owner: String, programId: String): Boolean {
     val program = programs.findOne(Program::owner eq owner, Program::id eq programId)
