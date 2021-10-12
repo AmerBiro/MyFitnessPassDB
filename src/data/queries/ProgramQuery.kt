@@ -9,8 +9,6 @@ import org.litote.kmongo.reactivestreams.KMongo
 private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val programs = database.getCollection<Program>()
-private val users = database.getCollection<User>()
-
 
 suspend fun createProgram(program: Program): Boolean {
     return programs.insertOne(program).wasAcknowledged()

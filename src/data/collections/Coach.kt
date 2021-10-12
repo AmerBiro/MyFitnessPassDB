@@ -12,6 +12,8 @@ data class Coach(
     val creationDate: Long,
     val lastUpdateDate: Long,
     val hasAccess: List<String>,
+    val owner: String,
+    val favoriteStatus: Int,
     @BsonId
     val id: String = ObjectId().toString()
 )
