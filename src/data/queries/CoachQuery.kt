@@ -10,8 +10,8 @@ private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val coach = database.getCollection<Coach>()
 
-suspend fun getCoach(userId: String): List<Coach> {
-    return coach.find(Coach::ownersId contains userId).toList()
+suspend fun getCoach(email: String): List<Coach> {
+    return coach.find(Coach::hasAccess contains email).toList()
 }
 
 suspend fun createUpdateCoach(coach_: Coach): Boolean{

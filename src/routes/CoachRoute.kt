@@ -3,7 +3,6 @@ package com.androiddevs.routes
 import com.androiddevs.data.queries.createUpdateCoach
 import com.androiddevs.data.queries.createUpdateProgram
 import com.androiddevs.data.queries.getCoach
-import com.androiddevs.data.queries.getPrograms
 import com.noteapp.database.collections.Coach
 import com.noteapp.database.collections.Program
 import io.ktor.application.*
@@ -17,9 +16,9 @@ fun Route.coachRoutes() {
     route("/getCoach") {
         authenticate {
             get {
-                val userId = call.principal<UserIdPrincipal>()!!.name
+                val email = call.principal<UserIdPrincipal>()!!.name
 
-                val coach = getCoach(userId)
+                val coach = getCoach(email)
                 call.respond(HttpStatusCode.OK, coach)
             }
         }

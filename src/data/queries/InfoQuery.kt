@@ -11,8 +11,8 @@ private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val info = database.getCollection<Info>()
 
-suspend fun getInfo(userId: String): List<Info> {
-    return info.find(Info::ownersId contains userId).toList()
+suspend fun getInfo(email: String): List<Info> {
+    return info.find(Info::hasAccess contains email).toList()
 }
 
 suspend fun createUpdateInfo(info_: Info): Boolean{

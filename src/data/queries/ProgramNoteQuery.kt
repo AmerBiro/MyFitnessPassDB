@@ -10,8 +10,8 @@ private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val programNotes = database.getCollection<ProgramNote>()
 
-suspend fun getProgramNotes(programId: String): List<ProgramNote> {
-    return programNotes.find(ProgramNote::ownersId contains programId).toList()
+suspend fun getProgramNotes(email: String, programId: String): List<ProgramNote> {
+    return programNotes.find(ProgramNote::hasAccess contains programId).toList()
 }
 
 suspend fun createUpdateProgramNotes(programNotes_: ProgramNote): Boolean{

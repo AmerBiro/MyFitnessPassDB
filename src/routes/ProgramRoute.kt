@@ -1,12 +1,13 @@
 package com.androiddevs.routes.program
 
-import com.androiddevs.data.queries.createUpdateProgram
-import com.androiddevs.data.queries.getPrograms
+import com.androiddevs.data.queries.*
+import com.androiddevs.data.requests.*
 import com.noteapp.database.collections.Program
 import io.ktor.application.call
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authenticate
 import io.ktor.auth.principal
+import io.ktor.client.engine.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Conflict
 import io.ktor.http.HttpStatusCode.Companion.OK
@@ -19,16 +20,50 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 
 fun Route.programRoutes() {
-    route("/getPrograms") {
+    route("/getOwnPrograms") {
         authenticate {
             get {
-                val userId = call.principal<UserIdPrincipal>()!!.name
-
-                val programs = getPrograms(userId)
-                call.respond(OK, programs)
+                val request = try {
+                    call.receive<GetOwnProgramsRequests>()
+                } catch (e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@get
+                }
+                val ownPrograms = getOwnPrograms(request.owner)
+                call.respond(OK, ownPrograms)
             }
         }
     }
+
+    route("/getProgramsSharedWIthMe") {
+        authenticate {
+            get {
+                val email = call.principal<UserIdPrincipal>()!!.name
+
+                val sharedProgramsWIthMe = getSharedProgramsWIthMe(email)
+                call.respond(OK, sharedProgramsWIthMe)
+            }
+        }
+    }
+
+//    route("/shareProgramWithOthers"){
+//        authenticate {
+//            post {
+//                val shareProgram = try {
+//                    call.receive<ShareProgramWithOthersRequest>()
+//                }catch (e: ContentTransformationException){
+//                    call.respond(BadRequest)
+//                    return@post
+//                }
+//                if (shareProgramWithOthers(shareProgram.programId, shareProgram.email)){
+//                    call.respond(OK)
+//                }else{
+//                    call.respond(Conflict)
+//                }
+//            }
+//        }
+//    }
+
 
     route("/createUpdateProgram"){
         authenticate {
@@ -47,5 +82,25 @@ fun Route.programRoutes() {
             }
         }
     }
+
+    route("/deleteProgram") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<DeleteProgramRequest>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(deleteProgram(request.owner, request.programId)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
 
 }

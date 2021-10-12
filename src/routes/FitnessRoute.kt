@@ -3,7 +3,6 @@ package com.androiddevs.routes.fitness
 import com.androiddevs.data.queries.createUpdateFitness
 import com.androiddevs.data.queries.createUpdateProgram
 import com.androiddevs.data.queries.getFitness
-import com.androiddevs.data.queries.getPrograms
 import com.noteapp.database.collections.Fitness
 import com.noteapp.database.collections.Program
 import io.ktor.application.*
@@ -17,9 +16,9 @@ fun Route.fitnessRoutes() {
     route("/getFitness") {
         authenticate {
             get {
-                val userId = call.principal<UserIdPrincipal>()!!.name
+                val email = call.principal<UserIdPrincipal>()!!.name
 
-                val fitness = getFitness(userId)
+                val fitness = getFitness(email)
                 call.respond(HttpStatusCode.OK, fitness)
             }
         }

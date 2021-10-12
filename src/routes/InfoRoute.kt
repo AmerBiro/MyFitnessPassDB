@@ -3,7 +3,6 @@ package com.androiddevs.routes
 import com.androiddevs.data.queries.createUpdateInfo
 import com.androiddevs.data.queries.createUpdateProgram
 import com.androiddevs.data.queries.getInfo
-import com.androiddevs.data.queries.getPrograms
 import com.noteapp.database.collections.Info
 import com.noteapp.database.collections.Program
 import io.ktor.application.*
@@ -17,9 +16,9 @@ fun Route.infoRoutes() {
     route("/getInfo") {
         authenticate {
             get {
-                val userId = call.principal<UserIdPrincipal>()!!.name
+                val email = call.principal<UserIdPrincipal>()!!.name
 
-                val info = getInfo(userId)
+                val info = getInfo(email)
                 call.respond(HttpStatusCode.OK, info)
             }
         }

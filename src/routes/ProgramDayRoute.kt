@@ -1,10 +1,7 @@
 package com.androiddevs.routes
 
-import com.androiddevs.data.queries.createUpdateProgram
 import com.androiddevs.data.queries.createUpdateProgramDay
 import com.androiddevs.data.queries.getProgramDay
-import com.androiddevs.data.queries.getPrograms
-import com.noteapp.database.collections.Program
 import com.noteapp.database.collections.ProgramDay
 import io.ktor.application.*
 import io.ktor.auth.*
