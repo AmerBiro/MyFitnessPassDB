@@ -174,4 +174,23 @@ fun Route.programRoutes() {
         }
     }
 
+    route("/removeProgramFromFavorite") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<RemoveProgramFromFavorite>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(removeProgramFromFavorite(request.programId)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
 }

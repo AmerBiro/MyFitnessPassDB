@@ -2,12 +2,9 @@ package com.androiddevs.data.queries
 
 import com.androiddevs.data.collections.User
 import com.noteapp.database.collections.Program
-import org.litote.kmongo.contains
+import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
-import org.litote.kmongo.set
-import org.litote.kmongo.setValue
 
 private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
@@ -69,10 +66,20 @@ suspend fun getFavoritePrograms(owner: String): List<Program> {
 }
 
 suspend fun addProgramToFavorite(programId: String): Boolean {
-    val program = programs.findOne(Program::id eq programId)
+    val program = programs.findOne(Program::id eq programId, Program::favoriteStatus ne 1)
     program?.let { program ->
         // the note has multiple owners, so we just delete the email from the owners list
         val newFavoriteStatus = 1
+        val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::favoriteStatus, newFavoriteStatus))
+        return updateResult.wasAcknowledged()
+    } ?: return false
+}
+
+suspend fun removeProgramFromFavorite(programId: String): Boolean {
+    val program = programs.findOne(Program::id eq programId, Program::favoriteStatus ne 0)
+    program?.let { program ->
+        // the note has multiple owners, so we just delete the email from the owners list
+        val newFavoriteStatus = 0
         val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()
     } ?: return false
