@@ -18,15 +18,15 @@ suspend fun createFitness(fitness_: Fitness): Boolean {
     return fitness.insertOne(fitness_).wasAcknowledged()
 }
 
-//suspend fun updateFitness(program: Program): Boolean {
-//    val programExists = programs.findOneById(program.id) != null
-//    if (programExists) {
-//        return programs.updateOneById(program.id, program).wasAcknowledged()
-//    }
-//    return false
-//}
-//
-//
+suspend fun updateFitness(fitness_: Fitness): Boolean {
+    val fitnessExists = fitness.findOneById(fitness_.id) != null
+    if (fitnessExists) {
+        return fitness.updateOneById(fitness_.id, fitness_).wasAcknowledged()
+    }
+    return false
+}
+
+
 //suspend fun deleteFitness(owner: String, programId: String): Boolean {
 //    val program = programs.findOne(Program::owner eq owner, Program::id eq programId)
 //    program?.let { program ->

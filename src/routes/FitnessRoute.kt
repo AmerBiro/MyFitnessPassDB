@@ -46,24 +46,24 @@ fun Route.fitnessRoutes() {
         }
     }
 
-//    route("/updateFitness"){
-//        authenticate {
-//            post {
-//                val program = try {
-//                    call.receive<Program>()
-//                }catch (e: ContentTransformationException){
-//                    call.respond(HttpStatusCode.BadRequest)
-//                    return@post
-//                }
-//                if (updateProgram(program)){
-//                    call.respond(HttpStatusCode.OK)
-//                }else{
-//                    call.respond(HttpStatusCode.Conflict)
-//                }
-//            }
-//        }
-//    }
-//
+    route("/updateFitness"){
+        authenticate {
+            post {
+                val fitness = try {
+                    call.receive<Fitness>()
+                }catch (e: ContentTransformationException){
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+                if (updateFitness(fitness)){
+                    call.respond(HttpStatusCode.OK)
+                }else{
+                    call.respond(HttpStatusCode.Conflict)
+                }
+            }
+        }
+    }
+
 //    route("/deleteFitness") {
 //        authenticate {
 //            post {
