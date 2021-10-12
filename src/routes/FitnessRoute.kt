@@ -1,6 +1,7 @@
 package com.androiddevs.routes.fitness
 
 import com.androiddevs.data.queries.*
+import com.androiddevs.data.requests.fitness.DeleteFitness
 import com.androiddevs.data.requests.fitness.GetFitness
 import com.androiddevs.data.requests.program.*
 import com.noteapp.database.collections.Fitness
@@ -64,23 +65,23 @@ fun Route.fitnessRoutes() {
         }
     }
 
-//    route("/deleteFitness") {
-//        authenticate {
-//            post {
-//                val email = call.principal<UserIdPrincipal>()!!.name
-//                val request = try {
-//                    call.receive<DeleteProgramRequest>()
-//                } catch(e: ContentTransformationException) {
-//                    call.respond(HttpStatusCode.BadRequest)
-//                    return@post
-//                }
-//                if(deleteProgram(request.owner, request.programId)) {
-//                    call.respond(HttpStatusCode.OK)
-//                } else {
-//                    call.respond(HttpStatusCode.Conflict)
-//                }
-//            }
-//        }
-//    }
+    route("/deleteFitness") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<DeleteFitness>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+                if(deleteFitness(request.fitnessId)) {
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.Conflict)
+                }
+            }
+        }
+    }
 
 }

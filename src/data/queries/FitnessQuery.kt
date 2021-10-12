@@ -27,9 +27,9 @@ suspend fun updateFitness(fitness_: Fitness): Boolean {
 }
 
 
-//suspend fun deleteFitness(owner: String, programId: String): Boolean {
-//    val program = programs.findOne(Program::owner eq owner, Program::id eq programId)
-//    program?.let { program ->
-//        return programs.deleteOneById(program.id).wasAcknowledged()
-//    } ?: return false
-//}
+suspend fun deleteFitness(fitnessId: String): Boolean {
+    val fitness_ = fitness.findOne(Fitness::id eq fitnessId)
+    fitness_?.let { fitness_ ->
+        return fitness.deleteOneById(fitness_.id).wasAcknowledged()
+    } ?: return false
+}
