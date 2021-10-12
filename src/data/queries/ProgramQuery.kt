@@ -30,20 +30,30 @@ suspend fun createUpdateProgram(program: Program): Boolean {
     }
 }
 
-//suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
-//    val shareProgram = programs.findOne(Program::id eq programId)
-//    shareProgram?.let { shareProgram ->
-//            // the note has multiple owners, so we just delete the email from the owners list
-//            val newHasAccess = shareProgram.hasAccess + email
-//            val updateResult = programs.updateOne(Program::id eq programId, setValue(Program::hasAccess, newHasAccess))
-//            return updateResult.wasAcknowledged()
-//
-//    } ?: return false
-//}
+suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
+    // :TODO check if the entered email does not exists in the list
+    val program = programs.findOne(Program::id eq programId)
+    program?.let { program ->
+        // the note has multiple owners, so we just delete the email from the owners list
+        val newHasAccess = program.hasAccess + email
+        val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::hasAccess, newHasAccess))
+        return updateResult.wasAcknowledged()
+    } ?: return false
+}
 
-suspend fun deleteProgram(owner: String, programId: String): Boolean{
-    val program = programs.findOne(Program::owner eq owner, Program::id eq  programId)
+suspend fun deleteProgram(owner: String, programId: String): Boolean {
+    val program = programs.findOne(Program::owner eq owner, Program::id eq programId)
     program?.let { program ->
         return programs.deleteOneById(program.id).wasAcknowledged()
+    } ?: return false
+}
+
+suspend fun removeProgramFromSharedWithMeList(programId: String, email: String): Boolean {
+    val program = programs.findOne(Program::id eq programId, Program::hasAccess contains email)
+    program?.let { program ->
+        // the note has multiple owners, so we just delete the email from the owners list
+        val newHasAccess = program.hasAccess - email
+        val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::hasAccess, newHasAccess))
+        return updateResult.wasAcknowledged()
     } ?: return false
 }

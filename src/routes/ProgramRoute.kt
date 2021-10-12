@@ -46,25 +46,6 @@ fun Route.programRoutes() {
         }
     }
 
-//    route("/shareProgramWithOthers"){
-//        authenticate {
-//            post {
-//                val shareProgram = try {
-//                    call.receive<ShareProgramWithOthersRequest>()
-//                }catch (e: ContentTransformationException){
-//                    call.respond(BadRequest)
-//                    return@post
-//                }
-//                if (shareProgramWithOthers(shareProgram.programId, shareProgram.email)){
-//                    call.respond(OK)
-//                }else{
-//                    call.respond(Conflict)
-//                }
-//            }
-//        }
-//    }
-
-
     route("/createUpdateProgram"){
         authenticate {
             post {
@@ -77,6 +58,44 @@ fun Route.programRoutes() {
                 if (createUpdateProgram(program)){
                     call.respond(OK)
                 }else{
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
+    route("/shareProgramWithOthers") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<ShareProgramWithOthersRequest>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(shareProgramWithOthers(request.programId, request.email)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
+    route("/removeProgramFromSharedWithMeList") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<RemoveProgramFromSharedWithMeListRequest>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(removeProgramFromSharedWithMeList(request.programId, request.email)) {
+                    call.respond(OK)
+                } else {
                     call.respond(Conflict)
                 }
             }
