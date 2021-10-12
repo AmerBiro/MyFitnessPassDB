@@ -62,3 +62,7 @@ suspend fun removeProgramFromSharedWithMeList(programId: String, email: String):
         return updateResult.wasAcknowledged()
     } ?: return false
 }
+
+suspend fun getFavoritePrograms(owner: String): List<Program> {
+    return programs.find(Program::owner eq owner, Program::favoriteStatus eq 1).toList()
+}

@@ -16,6 +16,7 @@ data class Program(
     val owner: String,
     val hasAccess: List<String>,
     val imageURL: String,
+    val favoriteStatus: Int,
     @BsonId
     val id: String = ObjectId().toString()
 )

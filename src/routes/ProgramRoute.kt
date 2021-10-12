@@ -161,4 +161,19 @@ fun Route.programRoutes() {
         }
     }
 
+    route("/getFavoritePrograms") {
+        authenticate {
+            get {
+                val request = try {
+                    call.receive<GetOwnProgramsRequests>()
+                } catch (e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@get
+                }
+                val favoritePrograms = getFavoritePrograms(request.owner)
+                call.respond(OK, favoritePrograms)
+            }
+        }
+    }
+
 }
