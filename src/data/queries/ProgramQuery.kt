@@ -6,6 +6,7 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
+import org.litote.kmongo.set
 import org.litote.kmongo.setValue
 
 private val client = KMongo.createClient().coroutine
@@ -65,4 +66,14 @@ suspend fun removeProgramFromSharedWithMeList(programId: String, email: String):
 
 suspend fun getFavoritePrograms(owner: String): List<Program> {
     return programs.find(Program::owner eq owner, Program::favoriteStatus eq 1).toList()
+}
+
+suspend fun addProgramToFavorite(programId: String): Boolean {
+    val program = programs.findOne(Program::id eq programId)
+    program?.let { program ->
+        // the note has multiple owners, so we just delete the email from the owners list
+        val newFavoriteStatus = 1
+        val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::favoriteStatus, newFavoriteStatus))
+        return updateResult.wasAcknowledged()
+    } ?: return false
 }

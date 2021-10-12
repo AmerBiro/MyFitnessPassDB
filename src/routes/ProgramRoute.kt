@@ -2,10 +2,7 @@ package com.androiddevs.routes.program
 
 import com.androiddevs.data.queries.*
 import com.androiddevs.data.requests.*
-import com.androiddevs.data.requests.program.DeleteProgramRequest
-import com.androiddevs.data.requests.program.GetOwnProgramsRequests
-import com.androiddevs.data.requests.program.RemoveProgramFromSharedWithMeListRequest
-import com.androiddevs.data.requests.program.ShareProgramWithOthersRequest
+import com.androiddevs.data.requests.program.*
 import com.noteapp.database.collections.Program
 import io.ktor.application.call
 import io.ktor.auth.UserIdPrincipal
@@ -86,24 +83,6 @@ fun Route.programRoutes() {
         }
     }
 
-//    route("/createUpdateProgram"){
-//        authenticate {
-//            post {
-//                val program = try {
-//                    call.receive<Program>()
-//                }catch (e: ContentTransformationException){
-//                    call.respond(BadRequest)
-//                    return@post
-//                }
-//                if (createUpdateProgram(program)){
-//                    call.respond(OK)
-//                }else{
-//                    call.respond(Conflict)
-//                }
-//            }
-//        }
-//    }
-
     route("/shareProgramWithOthers") {
         authenticate {
             post {
@@ -165,13 +144,32 @@ fun Route.programRoutes() {
         authenticate {
             get {
                 val request = try {
-                    call.receive<GetOwnProgramsRequests>()
+                    call.receive<GetFavoritePrograms>()
                 } catch (e: ContentTransformationException) {
                     call.respond(BadRequest)
                     return@get
                 }
                 val favoritePrograms = getFavoritePrograms(request.owner)
                 call.respond(OK, favoritePrograms)
+            }
+        }
+    }
+
+    route("/addProgramToFavorite") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<AddProgramToFavoriteRequest>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(addProgramToFavorite(request.programId)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
             }
         }
     }
