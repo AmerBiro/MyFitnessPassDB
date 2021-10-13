@@ -1,6 +1,5 @@
 package com.androiddevs.data.queries
 
-import com.androiddevs.data.collections.User
 import com.noteapp.database.collections.Program
 import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.coroutine
@@ -22,15 +21,19 @@ suspend fun updateProgram(program: Program): Boolean {
     return false
 }
 
+suspend fun isOwner(programId: String, email: String): Boolean{
+    val program = programs.findOneById(programId) ?: return false
+    return program.owner == email
+}
+
+suspend fun isAlreadyShared(programId: String, email: String): Boolean{
+    val program = programs.findOneById(programId)?: return true
+    return email in program.hasAccess
+}
+
 suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
-    // :TODO check if the entered email does not exists in the list
-    val program = programs.findOne(Program::id eq programId)
-    program?.let { program ->
-        // the note has multiple owners, so we just delete the email from the owners list
-        val newHasAccess = program.hasAccess + email
-        val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::hasAccess, newHasAccess))
-        return updateResult.wasAcknowledged()
-    } ?: return false
+    val hasAccess = programs.findOneById(programId)?.hasAccess ?: return false
+    return programs.updateOneById(programId, setValue(Program::hasAccess, hasAccess + email)).wasAcknowledged()
 }
 
 suspend fun getOwnPrograms(owner: String): List<Program> {
@@ -52,7 +55,6 @@ suspend fun deleteProgram(owner: String, programId: String): Boolean {
 suspend fun removeProgramFromSharedWithMeList(programId: String, email: String): Boolean {
     val program = programs.findOne(Program::id eq programId, Program::hasAccess contains email)
     program?.let { program ->
-        // the note has multiple owners, so we just delete the email from the owners list
         val newHasAccess = program.hasAccess - email
         val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::hasAccess, newHasAccess))
         return updateResult.wasAcknowledged()
@@ -66,7 +68,6 @@ suspend fun getFavoritePrograms(owner: String): List<Program> {
 suspend fun addProgramToFavorite(programId: String): Boolean {
     val program = programs.findOne(Program::id eq programId, Program::favoriteStatus ne 1)
     program?.let { program ->
-        // the note has multiple owners, so we just delete the email from the owners list
         val newFavoriteStatus = 1
         val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()
@@ -76,7 +77,6 @@ suspend fun addProgramToFavorite(programId: String): Boolean {
 suspend fun removeProgramFromFavorite(programId: String): Boolean {
     val program = programs.findOne(Program::id eq programId, Program::favoriteStatus ne 0)
     program?.let { program ->
-        // the note has multiple owners, so we just delete the email from the owners list
         val newFavoriteStatus = 0
         val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()

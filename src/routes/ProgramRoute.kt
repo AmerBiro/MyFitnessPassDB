@@ -3,6 +3,7 @@ package com.androiddevs.routes.program
 import com.androiddevs.data.queries.*
 import com.androiddevs.data.requests.*
 import com.androiddevs.data.requests.program.*
+import com.androiddevs.data.responses.SimpleResponse
 import com.noteapp.database.collections.Program
 import io.ktor.application.call
 import io.ktor.auth.UserIdPrincipal
@@ -24,25 +25,15 @@ fun Route.programRoutes() {
     route("/getOwnPrograms") {
         authenticate {
             get {
-                val request = try {
-                    call.receive<GetOwnProgramsRequests>()
-                } catch (e: ContentTransformationException) {
-                    call.respond(BadRequest)
-                    return@get
-                }
-                val ownPrograms = getOwnPrograms(request.owner)
-                call.respond(OK, ownPrograms)
-            }
-        }
-    }
-
-    route("/getProgramsSharedWIthMe") {
-        authenticate {
-            get {
                 val email = call.principal<UserIdPrincipal>()!!.name
-
-                val sharedProgramsWIthMe = getProgramsSharedWIthMe(email)
-                call.respond(OK, sharedProgramsWIthMe)
+//                val request = try {
+//                    call.receive<GetOwnProgramsRequests>()
+//                } catch (e: ContentTransformationException) {
+//                    call.respond(BadRequest)
+//                    return@get
+//                }
+                val ownPrograms = getOwnPrograms(email)
+                call.respond(OK, ownPrograms)
             }
         }
     }
@@ -83,38 +74,41 @@ fun Route.programRoutes() {
         }
     }
 
+    route("/getProgramsSharedWIthMe") {
+        authenticate {
+            get {
+                val email = call.principal<UserIdPrincipal>()!!.name
+
+                val sharedProgramsWIthMe = getProgramsSharedWIthMe(email)
+                call.respond(OK, sharedProgramsWIthMe)
+            }
+        }
+    }
+
     route("/shareProgramWithOthers") {
         authenticate {
             post {
-                val email = call.principal<UserIdPrincipal>()!!.name
                 val request = try {
                     call.receive<ShareProgramWithOthersRequest>()
                 } catch(e: ContentTransformationException) {
                     call.respond(BadRequest)
                     return@post
                 }
-                if(shareProgramWithOthers(request.programId, request.email)) {
-                    call.respond(OK)
-                } else {
-                    call.respond(Conflict)
-                }
-            }
-        }
-    }
-
-    route("/deleteProgram") {
-        authenticate {
-            post {
-                val email = call.principal<UserIdPrincipal>()!!.name
-                val request = try {
-                    call.receive<DeleteProgramRequest>()
-                } catch(e: ContentTransformationException) {
-                    call.respond(BadRequest)
+                if (!checkIfUserExists(request.email)){
+                    call.respond(OK, SimpleResponse(false, "The entered user does not exist!"))
                     return@post
                 }
-                if(deleteProgram(request.owner, request.programId)) {
-                    call.respond(OK)
-                } else {
+                if (isOwner(request.programId, request.email)){
+                    call.respond(OK, SimpleResponse(false, "This user is already an owner of this program"))
+                    return@post
+                }
+                if (isAlreadyShared(request.programId, request.email)){
+                    call.respond(OK, SimpleResponse(false, "This program is already shared"))
+                    return@post
+                }
+                if (shareProgramWithOthers(request.programId, request.email)){
+                    call.respond(OK, SimpleResponse(true, "${request.email} can now see this program"))
+                }else{
                     call.respond(Conflict)
                 }
             }
@@ -185,6 +179,25 @@ fun Route.programRoutes() {
                     return@post
                 }
                 if(removeProgramFromFavorite(request.programId)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
+    route("/deleteProgram") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<DeleteProgramRequest>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(deleteProgram(request.owner, request.programId)) {
                     call.respond(OK)
                 } else {
                     call.respond(Conflict)

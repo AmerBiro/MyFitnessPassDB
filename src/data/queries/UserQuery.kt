@@ -1,7 +1,6 @@
 package com.androiddevs.data.queries
 
 import com.androiddevs.data.collections.User
-import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
