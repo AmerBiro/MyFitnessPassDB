@@ -1,4 +1,4 @@
-package com.androiddevs.data.requests
+package com.androiddevs.data.requests.user
 
 data class AccountRequest(
     val email: String,

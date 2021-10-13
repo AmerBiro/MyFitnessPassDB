@@ -2,8 +2,7 @@ package com.androiddevs.routes
 
 import com.androiddevs.data.collections.ProgramNote
 import com.androiddevs.data.queries.*
-import com.androiddevs.data.requests.GetProgramNoteRequest
-import com.noteapp.database.collections.Program
+import com.androiddevs.data.requests.program_note.GetProgramNoteRequest
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*

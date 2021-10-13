@@ -21,6 +21,10 @@ suspend fun updateProgram(program: Program): Boolean {
     return false
 }
 
+suspend fun getOwnPrograms(owner: String): List<Program> {
+    return programs.find(Program::owner eq owner).toList()
+}
+
 suspend fun isOwner(programId: String, email: String): Boolean{
     val program = programs.findOneById(programId) ?: return false
     return program.owner == email
@@ -36,9 +40,7 @@ suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
     return programs.updateOneById(programId, setValue(Program::hasAccess, hasAccess + email)).wasAcknowledged()
 }
 
-suspend fun getOwnPrograms(owner: String): List<Program> {
-    return programs.find(Program::owner eq owner).toList()
-}
+
 
 suspend fun getProgramsSharedWIthMe(email: String): List<Program> {
     return programs.find(Program::hasAccess contains email).toList()

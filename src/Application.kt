@@ -3,9 +3,7 @@ package com.androiddevs
 import com.androiddevs.data.queries.checkPasswordForEmail
 import com.androiddevs.routes.*
 import com.androiddevs.routes.fitness.fitnessRoutes
-import com.androiddevs.routes.user.loginRoute
 import com.androiddevs.routes.program.programRoutes
-import com.androiddevs.routes.user.registerRoute
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -33,8 +31,7 @@ fun Application.module(testing: Boolean = false) {
         configureAuth()
     }
     install(Routing) {
-        registerRoute()
-        loginRoute()
+        userRoute()
         programRoutes()
         fitnessRoutes()
         coachRoutes()
