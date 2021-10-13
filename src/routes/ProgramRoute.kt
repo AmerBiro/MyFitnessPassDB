@@ -26,12 +26,6 @@ fun Route.programRoutes() {
         authenticate {
             get {
                 val email = call.principal<UserIdPrincipal>()!!.name
-//                val request = try {
-//                    call.receive<GetOwnProgramsRequests>()
-//                } catch (e: ContentTransformationException) {
-//                    call.respond(BadRequest)
-//                    return@get
-//                }
                 val ownPrograms = getOwnPrograms(email)
                 call.respond(OK, ownPrograms)
             }
@@ -137,13 +131,9 @@ fun Route.programRoutes() {
     route("/getFavoritePrograms") {
         authenticate {
             get {
-                val request = try {
-                    call.receive<GetFavoritePrograms>()
-                } catch (e: ContentTransformationException) {
-                    call.respond(BadRequest)
-                    return@get
-                }
-                val favoritePrograms = getFavoritePrograms(request.owner)
+                val email = call.principal<UserIdPrincipal>()!!.name
+
+                val favoritePrograms = getFavoritePrograms(email)
                 call.respond(OK, favoritePrograms)
             }
         }
@@ -152,7 +142,6 @@ fun Route.programRoutes() {
     route("/addProgramToFavorite") {
         authenticate {
             post {
-                val email = call.principal<UserIdPrincipal>()!!.name
                 val request = try {
                     call.receive<AddProgramToFavoriteRequest>()
                 } catch(e: ContentTransformationException) {
@@ -171,7 +160,6 @@ fun Route.programRoutes() {
     route("/removeProgramFromFavorite") {
         authenticate {
             post {
-                val email = call.principal<UserIdPrincipal>()!!.name
                 val request = try {
                     call.receive<RemoveProgramFromFavorite>()
                 } catch(e: ContentTransformationException) {
@@ -190,14 +178,13 @@ fun Route.programRoutes() {
     route("/deleteProgram") {
         authenticate {
             post {
-                val email = call.principal<UserIdPrincipal>()!!.name
                 val request = try {
                     call.receive<DeleteProgramRequest>()
                 } catch(e: ContentTransformationException) {
                     call.respond(BadRequest)
                     return@post
                 }
-                if(deleteProgram(request.owner, request.programId)) {
+                if(deleteProgram(request.programId)) {
                     call.respond(OK)
                 } else {
                     call.respond(Conflict)

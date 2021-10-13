@@ -2,5 +2,5 @@ package com.androiddevs.data.requests.coach
 
 class RemoveCoachFromSharedWithMeListRequest(
     val coachId: String,
-    val coachEmail: String
+    val email: String
 )

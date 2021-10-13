@@ -25,14 +25,19 @@ suspend fun updateCoach(coach_: Coach): Boolean {
     return false
 }
 
+suspend fun isOwnerCoach(coachId: String, email: String): Boolean{
+    val coach_ = coach.findOneById(coachId) ?: return false
+    return coach_.owner == email
+}
+
+suspend fun isCoachAlreadyShared(coachId: String, email: String): Boolean{
+    val coach_ = coach.findOneById(coachId)?: return true
+    return email in coach_.hasAccess
+}
+
 suspend fun shareCoachWithOthers(coachId: String, email: String): Boolean {
-    // :TODO check if the entered email does not exists in the list
-    val coach_ = coach.findOne(Coach::id eq coachId)
-    coach_?.let { coach_ ->
-        val newHasAccess = coach_.hasAccess + email
-        val updateResult = coach.updateOne(Coach::id eq coach_.id, setValue(Coach::hasAccess, newHasAccess))
-        return updateResult.wasAcknowledged()
-    } ?: return false
+    val hasAccess = coach.findOneById(coachId)?.hasAccess ?: return false
+    return coach.updateOneById(coachId, setValue(Coach::hasAccess, hasAccess + email)).wasAcknowledged()
 }
 
 suspend fun getOwnCoach(owner: String): List<Coach> {
@@ -44,8 +49,8 @@ suspend fun getCoachSharedWIthMe(email: String): List<Coach> {
 }
 
 
-suspend fun deleteCoach(owner: String, coachId: String): Boolean {
-    val coach_ = coach.findOne(Coach::owner eq owner, Coach::id eq coachId)
+suspend fun deleteCoach(coachId: String): Boolean {
+    val coach_ = coach.findOne(Coach::id eq coachId)
     coach_?.let { coach_ ->
         return coach.deleteOneById(coach_.id).wasAcknowledged()
     } ?: return false
@@ -55,7 +60,7 @@ suspend fun removeCoachFromSharedWithMeList(coachId: String, email: String): Boo
     val coach_ = coach.findOne(Coach::id eq coachId, Coach::hasAccess contains email)
     coach_?.let { coach_ ->
         val newHasAccess = coach_.hasAccess - email
-        val updateResult = coach.updateOne(Coach::id eq coach_.id, setValue(Program::hasAccess, newHasAccess))
+        val updateResult = coach.updateOne(Coach::id eq coach_.id, setValue(Coach::hasAccess, newHasAccess))
         return updateResult.wasAcknowledged()
     } ?: return false
 }

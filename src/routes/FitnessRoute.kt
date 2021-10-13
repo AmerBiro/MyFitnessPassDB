@@ -17,13 +17,8 @@ fun Route.fitnessRoutes() {
     route("/getFitness") {
         authenticate {
             get {
-                val request = try {
-                    call.receive<GetFitness>()
-                } catch (e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-                val fitness = getFitness(request.owner)
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val fitness = getFitness(email)
                 call.respond(HttpStatusCode.OK, fitness)
             }
         }
@@ -68,7 +63,6 @@ fun Route.fitnessRoutes() {
     route("/deleteFitness") {
         authenticate {
             post {
-                val email = call.principal<UserIdPrincipal>()!!.name
                 val request = try {
                     call.receive<DeleteFitness>()
                 } catch(e: ContentTransformationException) {

@@ -45,8 +45,8 @@ suspend fun getProgramsSharedWIthMe(email: String): List<Program> {
 }
 
 
-suspend fun deleteProgram(owner: String, programId: String): Boolean {
-    val program = programs.findOne(Program::owner eq owner, Program::id eq programId)
+suspend fun deleteProgram(programId: String): Boolean {
+    val program = programs.findOne(Program::id eq programId)
     program?.let { program ->
         return programs.deleteOneById(program.id).wasAcknowledged()
     } ?: return false
