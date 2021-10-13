@@ -154,7 +154,7 @@ fun Route.coachRoutes() {
         authenticate {
             post {
                 val request = try {
-                    call.receive<RemoveCoachFromFavorite>()
+                    call.receive<RemoveCoachFromFavoriteRequest>()
                 } catch(e: ContentTransformationException) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post

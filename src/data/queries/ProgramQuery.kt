@@ -21,16 +21,16 @@ suspend fun updateProgram(program: Program): Boolean {
     return false
 }
 
-suspend fun getOwnPrograms(owner: String): List<Program> {
-    return programs.find(Program::owner eq owner).toList()
+suspend fun getOwnPrograms(email: String): List<Program> {
+    return programs.find(Program::email eq email).toList()
 }
 
 suspend fun isOwner(programId: String, email: String): Boolean{
     val program = programs.findOneById(programId) ?: return false
-    return program.owner == email
+    return program.email == email
 }
 
-suspend fun isAlreadyShared(programId: String, email: String): Boolean{
+suspend fun isProgramAlreadyShared(programId: String, email: String): Boolean{
     val program = programs.findOneById(programId)?: return true
     return email in program.hasAccess
 }
@@ -63,8 +63,8 @@ suspend fun removeProgramFromSharedWithMeList(programId: String, email: String):
     } ?: return false
 }
 
-suspend fun getFavoritePrograms(owner: String): List<Program> {
-    return programs.find(Program::owner eq owner, Program::favoriteStatus eq 1).toList()
+suspend fun getFavoritePrograms(email: String): List<Program> {
+    return programs.find(Program::email eq email, Program::favoriteStatus eq 1).toList()
 }
 
 suspend fun addProgramToFavorite(programId: String): Boolean {

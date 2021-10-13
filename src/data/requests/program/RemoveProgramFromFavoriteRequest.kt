@@ -1,5 +1,5 @@
 package com.androiddevs.data.requests.program
 
-data class RemoveProgramFromFavorite(
+data class RemoveProgramFromFavoriteRequest(
     val programId: String
 )

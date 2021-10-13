@@ -1,5 +1,5 @@
 package com.androiddevs.data.requests.coach
 
-data class GetFavoriteCoach(
+data class GetFavoriteCoachRequest(
     val owner: String
 )

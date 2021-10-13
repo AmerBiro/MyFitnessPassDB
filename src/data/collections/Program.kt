@@ -13,7 +13,7 @@ data class Program(
     val lastUpdateDate: Long,
     val startDate: Long,
     val endDate: Long,
-    val owner: String,
+    val email: String,
     val hasAccess: List<String>,
     val imageURL: String,
     val favoriteStatus: Int,

@@ -1,7 +1,7 @@
 package com.androiddevs.routes.fitness
 
 import com.androiddevs.data.queries.*
-import com.androiddevs.data.requests.fitness.DeleteFitness
+import com.androiddevs.data.requests.fitness.DeleteFitnessRequest
 import com.androiddevs.data.requests.program.*
 import com.noteapp.database.collections.Fitness
 import io.ktor.application.*
@@ -63,7 +63,7 @@ fun Route.fitnessRoutes() {
         authenticate {
             post {
                 val request = try {
-                    call.receive<DeleteFitness>()
+                    call.receive<DeleteFitnessRequest>()
                 } catch(e: ContentTransformationException) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post

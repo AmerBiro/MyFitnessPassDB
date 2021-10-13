@@ -1,5 +1,5 @@
 package com.androiddevs.data.requests.fitness
 
-data class DeleteFitness(
+data class DeleteFitnessRequest(
     val fitnessId: String
 )

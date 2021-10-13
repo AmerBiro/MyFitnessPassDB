@@ -1,5 +1,5 @@
 package com.androiddevs.data.requests.program
 
-data class GetFavoritePrograms(
+data class GetFavoriteProgramsRequest(
     val owner: String
 )

@@ -10,7 +10,7 @@ data class ProgramDay(
     val color: String,
     val creationDate: Long,
     val lastUpdateDate: Long,
-    val ownersId: List<String>,
+    val owner: String,
     @BsonId
     val id: String = ObjectId().toString()
 )

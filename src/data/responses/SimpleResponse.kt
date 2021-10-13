@@ -1,6 +1,6 @@
 package com.androiddevs.data.responses
 
 data class SimpleResponse(
-    val successful: Boolean,
+    val status: Boolean,
     val message: String
 )

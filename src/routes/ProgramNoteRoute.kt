@@ -2,8 +2,8 @@ package com.androiddevs.routes
 
 import com.androiddevs.data.collections.ProgramNote
 import com.androiddevs.data.queries.*
-import com.androiddevs.data.requests.program_note.DeleteProgramNote
-import com.androiddevs.data.requests.program_note.GetProgramsNote
+import com.androiddevs.data.requests.program_note.DeleteProgramNoteRequest
+import com.androiddevs.data.requests.program_note.GetProgramsNoteRequest
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -20,7 +20,7 @@ fun Route.programNotesRoutes() {
         authenticate {
             get {
                 val owner = try {
-                    call.receive<GetProgramsNote>()
+                    call.receive<GetProgramsNoteRequest>()
                 }catch (e: ContentTransformationException){
                     call.respond(BadRequest)
                     return@get
@@ -71,7 +71,7 @@ fun Route.programNotesRoutes() {
         authenticate {
             post {
                 val programsNotes = try {
-                    call.receive<DeleteProgramNote>()
+                    call.receive<DeleteProgramNoteRequest>()
                 } catch(e: ContentTransformationException) {
                     call.respond(BadRequest)
                     return@post

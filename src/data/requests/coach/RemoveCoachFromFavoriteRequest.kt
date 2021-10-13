@@ -1,5 +1,5 @@
 package com.androiddevs.data.requests.coach
 
-data class RemoveCoachFromFavorite(
+data class RemoveCoachFromFavoriteRequest(
     val coachId: String
 )

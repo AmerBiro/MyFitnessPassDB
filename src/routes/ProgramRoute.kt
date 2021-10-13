@@ -96,7 +96,7 @@ fun Route.programRoutes() {
                     call.respond(OK, SimpleResponse(false, "This user is already an owner of this program"))
                     return@post
                 }
-                if (isAlreadyShared(request.programId, request.email)){
+                if (isProgramAlreadyShared(request.programId, request.email)){
                     call.respond(OK, SimpleResponse(false, "This program is already shared"))
                     return@post
                 }
@@ -161,7 +161,7 @@ fun Route.programRoutes() {
         authenticate {
             post {
                 val request = try {
-                    call.receive<RemoveProgramFromFavorite>()
+                    call.receive<RemoveProgramFromFavoriteRequest>()
                 } catch(e: ContentTransformationException) {
                     call.respond(BadRequest)
                     return@post

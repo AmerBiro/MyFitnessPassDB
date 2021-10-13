@@ -4,7 +4,7 @@ import com.androiddevs.data.collections.User
 import com.androiddevs.data.queries.checkIfUserExists
 import com.androiddevs.data.queries.checkPasswordForEmail
 import com.androiddevs.data.queries.registerUser
-import com.androiddevs.data.requests.user.AccountRequest
+import com.androiddevs.data.requests.user.UserRequest
 import com.androiddevs.data.responses.SimpleResponse
 import io.ktor.application.*
 import io.ktor.features.ContentTransformationException
@@ -18,7 +18,7 @@ fun Route.userRoute(){
     route("/register") {
         post {
             val request = try {
-                call.receive<AccountRequest>()
+                call.receive<UserRequest>()
             } catch(e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
@@ -39,7 +39,7 @@ fun Route.userRoute(){
     route("/login") {
         post {
             val request = try {
-                call.receive<AccountRequest>()
+                call.receive<UserRequest>()
             } catch(e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
