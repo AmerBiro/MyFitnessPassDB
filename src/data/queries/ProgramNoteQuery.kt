@@ -1,24 +1,33 @@
 package com.androiddevs.data.queries
 
 import com.androiddevs.data.collections.ProgramNote
-import com.noteapp.database.collections.Program
-import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
-private val programNotes = database.getCollection<ProgramNote>()
+private val programsNotes = database.getCollection<ProgramNote>()
 
-suspend fun getProgramNotes(email: String, programId: String): List<ProgramNote> {
-    return programNotes.find(ProgramNote::hasAccess contains programId).toList()
+suspend fun createProgramNotes(programsNote: ProgramNote): Boolean {
+    return programsNotes.insertOne(programsNote).wasAcknowledged()
 }
 
-suspend fun createUpdateProgramNotes(programNotes_: ProgramNote): Boolean{
-    val programNotesExists = programNotes.findOneById(programNotes_.id) != null
-    return if (programNotesExists){
-        programNotes.updateOneById(programNotes_.id, programNotes_).wasAcknowledged()
-    }else{
-        programNotes.insertOne(programNotes_).wasAcknowledged()
+suspend fun updateProgramNotes(programsNote: ProgramNote): Boolean {
+    val programNoteExists = programsNotes.findOneById(programsNote.id) != null
+    if (programNoteExists) {
+        return programsNotes.updateOneById(programsNote.id, programsNote).wasAcknowledged()
     }
+    return false
+}
+
+suspend fun getOwnProgramsNotes(owner: String): List<ProgramNote> {
+    return programsNotes.find(ProgramNote::owner eq owner).toList()
+}
+
+suspend fun deleteProgramNote(programsNoteId: String): Boolean {
+    val programsNote = programsNotes.findOne(ProgramNote::id eq programsNoteId)
+    programsNote?.let { programsNote ->
+        return programsNotes.deleteOneById(programsNote.id).wasAcknowledged()
+    } ?: return false
 }

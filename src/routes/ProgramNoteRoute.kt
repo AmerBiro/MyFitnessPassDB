@@ -2,48 +2,84 @@ package com.androiddevs.routes
 
 import com.androiddevs.data.collections.ProgramNote
 import com.androiddevs.data.queries.*
-import com.androiddevs.data.requests.program_note.GetProgramNoteRequest
+import com.androiddevs.data.requests.program_note.DeleteProgramNote
+import com.androiddevs.data.requests.program_note.GetProgramsNote
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.Conflict
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.programNotesRoutes() {
-    route("/getProgramNotes") {
-        authenticate {
 
+    route("/getProgramsNotes") {
+        authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
-                val request = try {
-                    call.receive<GetProgramNoteRequest>()
-                } catch(e: ContentTransformationException) {
+                val owner = try {
+                    call.receive<GetProgramsNote>()
+                }catch (e: ContentTransformationException){
                     call.respond(BadRequest)
                     return@get
                 }
-                val programNotes = getProgramNotes(email, request.programId)
-                call.respond(OK, programNotes)
+                val programsNotes = getOwnProgramsNotes(owner.programId)
+                call.respond(OK, programsNotes)
             }
-
         }
     }
 
-    route("/createUpdateProgramNotes"){
+    route("/createProgramsNotes"){
         authenticate {
             post {
-                val programNotes = try {
+                val programsNotes = try {
                     call.receive<ProgramNote>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
-                if (createUpdateProgramNotes(programNotes)){
-                    call.respond(HttpStatusCode.OK)
+                if (createProgramNotes(programsNotes)){
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
+    route("/updateProgramsNotes"){
+        authenticate {
+            post {
+                val programsNotes = try {
+                    call.receive<ProgramNote>()
+                }catch (e: ContentTransformationException){
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if (updateProgramNotes(programsNotes)){
+                    call.respond(OK)
+                }else{
+                    call.respond(Conflict)
+                }
+            }
+        }
+    }
+
+    route("/deleteProgramsNotes") {
+        authenticate {
+            post {
+                val programsNotes = try {
+                    call.receive<DeleteProgramNote>()
+                } catch(e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if(deleteProgramNote(programsNotes.programNoteId)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
                 }
             }
         }

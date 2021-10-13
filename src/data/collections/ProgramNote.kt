@@ -8,7 +8,7 @@ data class ProgramNote(
     val content: String,
     val creationDate: Long,
     val lastUpdateDate: Long,
-    val hasAccess: List<String>,
+    val owner: String,
     @BsonId
     val id: String = ObjectId().toString()
 )
