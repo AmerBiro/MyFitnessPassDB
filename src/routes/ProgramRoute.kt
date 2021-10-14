@@ -1,7 +1,6 @@
 package com.androiddevs.routes.program
 
 import com.androiddevs.data.queries.*
-import com.androiddevs.data.requests.*
 import com.androiddevs.data.requests.program.*
 import com.androiddevs.data.responses.SimpleResponse
 import com.noteapp.database.collections.Program
@@ -9,7 +8,6 @@ import io.ktor.application.call
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authenticate
 import io.ktor.auth.principal
-import io.ktor.client.engine.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Conflict
 import io.ktor.http.HttpStatusCode.Companion.OK
@@ -22,12 +20,13 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 
 fun Route.programRoutes() {
-    route("/getOwnPrograms") {
+
+    route("/getPrograms") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
-                val ownPrograms = getOwnPrograms(email)
-                call.respond(OK, ownPrograms)
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val programs = getPrograms(parent)
+                call.respond(OK, programs)
             }
         }
     }
@@ -92,7 +91,7 @@ fun Route.programRoutes() {
                     call.respond(OK, SimpleResponse(false, "The entered user does not exist!"))
                     return@post
                 }
-                if (isOwner(request.programId, request.email)){
+                if (isProgramOwner(request.programId, request.owner)){
                     call.respond(OK, SimpleResponse(false, "This user is already an owner of this program"))
                     return@post
                 }
@@ -131,9 +130,9 @@ fun Route.programRoutes() {
     route("/getFavoritePrograms") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
+                val parent = call.principal<UserIdPrincipal>()!!.name
 
-                val favoritePrograms = getFavoritePrograms(email)
+                val favoritePrograms = getFavoritePrograms(parent)
                 call.respond(OK, favoritePrograms)
             }
         }

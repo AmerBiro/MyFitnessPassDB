@@ -3,7 +3,6 @@ package com.androiddevs.routes
 import com.androiddevs.data.queries.*
 import com.androiddevs.data.requests.program_day.DeleteProgramDayRequest
 import com.androiddevs.data.requests.program_day.GetProgramsDayRequest
-import com.androiddevs.data.requests.program_note.GetProgramsNoteRequest
 import com.noteapp.database.collections.ProgramDay
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -26,7 +25,7 @@ fun Route.programDayRoutes() {
                     call.respond(BadRequest)
                     return@get
                 }
-                val programDay = getProgramDay(request.programId)
+                val programDay = getProgramDay(request.parent)
                 call.respond(OK, programDay)
             }
         }

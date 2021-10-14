@@ -5,6 +5,9 @@ import com.noteapp.database.collections.Info
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.Conflict
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -13,9 +16,9 @@ fun Route.infoRoutes() {
     route("/getOwnInfo") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
-                val ownInfo = getOwnInfo(email)
-                call.respond(HttpStatusCode.OK, ownInfo)
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val info = getOwnInfo(parent)
+                call.respond(OK, info)
             }
         }
     }
@@ -26,13 +29,13 @@ fun Route.infoRoutes() {
                 val info = try {
                     call.receive<Info>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (createInfo(info)){
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -44,13 +47,13 @@ fun Route.infoRoutes() {
                 val info = try {
                     call.receive<Info>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (updateInfo(info)){
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }

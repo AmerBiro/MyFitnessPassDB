@@ -2,23 +2,25 @@ package com.androiddevs.routes
 
 import com.androiddevs.data.queries.*
 import com.androiddevs.data.requests.coach.*
-import com.androiddevs.data.requests.program.*
 import com.androiddevs.data.responses.SimpleResponse
 import com.noteapp.database.collections.Coach
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.Conflict
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.coachRoutes() {
-    route("/getOwnCoach") {
+    route("/getCoaches") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
-                val ownCoach = getOwnCoach(email)
-                call.respond(HttpStatusCode.OK, ownCoach)
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val getCoaches = getCoaches(parent)
+                call.respond(OK, getCoaches)
             }
         }
     }
@@ -29,13 +31,13 @@ fun Route.coachRoutes() {
                 val coach = try {
                     call.receive<Coach>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (createCoach(coach)){
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -47,25 +49,25 @@ fun Route.coachRoutes() {
                 val coach = try {
                     call.receive<Coach>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (updateCoach(coach)){
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
     }
 
-    route("/getCoachSharedWIthMe") {
+    route("/getCoachesSharedWIthMe") {
         authenticate {
             get {
                 val email = call.principal<UserIdPrincipal>()!!.name
 
-                val sharedCoachWIthMe = getCoachSharedWIthMe(email)
-                call.respond(HttpStatusCode.OK, sharedCoachWIthMe)
+                val sharedCoachWIthMe = getCoachesSharedWIthMe(email)
+                call.respond(OK, sharedCoachWIthMe)
             }
         }
     }
@@ -78,25 +80,25 @@ fun Route.coachRoutes() {
                 val request = try {
                     call.receive<ShareCoachWithOthersRequest>()
                 } catch(e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (!checkIfUserExists(request.email)){
-                    call.respond(HttpStatusCode.OK, SimpleResponse(false, "The entered user does not exist!"))
+                    call.respond(OK, SimpleResponse(false, "The entered user does not exist!"))
                     return@post
                 }
-                if (isOwnerCoach(request.coachId, request.email)){
-                    call.respond(HttpStatusCode.OK, SimpleResponse(false, "This user is already an owner of this coach"))
+                if (isCoachOwner(request.coachId, request.owner)){
+                    call.respond(OK, SimpleResponse(false, "This user is already an owner of this coach"))
                     return@post
                 }
                 if (isCoachAlreadyShared(request.coachId, request.email)){
-                    call.respond(HttpStatusCode.OK, SimpleResponse(false, "This coach is already shared"))
+                    call.respond(OK, SimpleResponse(false, "This coach is already shared"))
                     return@post
                 }
                 if (shareCoachWithOthers(request.coachId, request.email)){
-                    call.respond(HttpStatusCode.OK, SimpleResponse(true, "${request.email} can now see this program"))
+                    call.respond(OK, SimpleResponse(true, "${request.email} can now see this program"))
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -109,25 +111,25 @@ fun Route.coachRoutes() {
                 val request = try {
                     call.receive<RemoveCoachFromSharedWithMeListRequest>()
                 } catch(e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if(removeCoachFromSharedWithMeList(request.coachId, request.email)) {
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 } else {
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
     }
 
-    route("/getFavoriteCoach") {
+    route("/getFavoriteCoaches") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
+                val parent = call.principal<UserIdPrincipal>()!!.name
 
-                val favoriteCoach = getFavoriteCoach(email)
-                call.respond(HttpStatusCode.OK, favoriteCoach)
+                val favoriteCoach = getFavoriteCoach(parent)
+                call.respond(OK, favoriteCoach)
             }
         }
     }
@@ -138,13 +140,13 @@ fun Route.coachRoutes() {
                 val request = try {
                     call.receive<AddCoachToFavoriteRequest>()
                 } catch(e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if(addCoachToFavorite(request.coachId)) {
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 } else {
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -156,13 +158,13 @@ fun Route.coachRoutes() {
                 val request = try {
                     call.receive<RemoveCoachFromFavoriteRequest>()
                 } catch(e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if(removeCoachFromFavorite(request.coachId)) {
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 } else {
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -174,13 +176,13 @@ fun Route.coachRoutes() {
                 val request = try {
                     call.receive<DeleteCoachRequest>()
                 } catch(e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if(deleteCoach(request.coachId)) {
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 } else {
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }

@@ -9,8 +9,8 @@ private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
 private val fitness = database.getCollection<Fitness>()
 
-suspend fun getFitness(owner: String): List<Fitness> {
-    return fitness.find(Fitness::owner eq owner).toList()
+suspend fun getFitness(parent: String): List<Fitness> {
+    return fitness.find(Fitness::parent eq parent).toList()
 }
 
 suspend fun createFitness(fitness_: Fitness): Boolean {

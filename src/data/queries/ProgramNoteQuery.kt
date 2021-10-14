@@ -21,8 +21,8 @@ suspend fun updateProgramNotes(programsNote: ProgramNote): Boolean {
     return false
 }
 
-suspend fun getOwnProgramsNotes(owner: String): List<ProgramNote> {
-    return programsNotes.find(ProgramNote::owner eq owner).toList()
+suspend fun getProgramsNotes(parent: String): List<ProgramNote> {
+    return programsNotes.find(ProgramNote::parent eq parent).toList()
 }
 
 suspend fun deleteProgramNote(programsNoteId: String): Boolean {

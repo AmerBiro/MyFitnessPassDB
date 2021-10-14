@@ -6,7 +6,6 @@ import com.androiddevs.data.requests.program_note.DeleteProgramNoteRequest
 import com.androiddevs.data.requests.program_note.GetProgramsNoteRequest
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Conflict
 import io.ktor.http.HttpStatusCode.Companion.OK
@@ -19,13 +18,13 @@ fun Route.programNotesRoutes() {
     route("/getProgramsNotes") {
         authenticate {
             get {
-                val owner = try {
+                val request = try {
                     call.receive<GetProgramsNoteRequest>()
                 }catch (e: ContentTransformationException){
                     call.respond(BadRequest)
                     return@get
                 }
-                val programsNotes = getOwnProgramsNotes(owner.programId)
+                val programsNotes = getProgramsNotes(request.parent)
                 call.respond(OK, programsNotes)
             }
         }

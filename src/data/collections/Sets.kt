@@ -8,7 +8,8 @@ data class Sets(
     val weight: Double,
     val creationDate: Long,
     val lastUpdateDate: Long,
-    val ownersId: List<String>,
+    val parent: String,
+    val owner: String,
     @BsonId
     val id: String = ObjectId().toString()
 )

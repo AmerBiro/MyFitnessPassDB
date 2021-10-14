@@ -2,11 +2,13 @@ package com.androiddevs.routes.fitness
 
 import com.androiddevs.data.queries.*
 import com.androiddevs.data.requests.fitness.DeleteFitnessRequest
-import com.androiddevs.data.requests.program.*
 import com.noteapp.database.collections.Fitness
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.Conflict
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -16,9 +18,9 @@ fun Route.fitnessRoutes() {
     route("/getFitness") {
         authenticate {
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name
-                val fitness = getFitness(email)
-                call.respond(HttpStatusCode.OK, fitness)
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val fitness = getFitness(parent)
+                call.respond(OK, fitness)
             }
         }
     }
@@ -29,13 +31,13 @@ fun Route.fitnessRoutes() {
                 val fitness = try {
                     call.receive<Fitness>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (createFitness(fitness)){
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -47,13 +49,13 @@ fun Route.fitnessRoutes() {
                 val fitness = try {
                     call.receive<Fitness>()
                 }catch (e: ContentTransformationException){
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if (updateFitness(fitness)){
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 }else{
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }
@@ -65,13 +67,13 @@ fun Route.fitnessRoutes() {
                 val request = try {
                     call.receive<DeleteFitnessRequest>()
                 } catch(e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(BadRequest)
                     return@post
                 }
                 if(deleteFitness(request.fitnessId)) {
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(OK)
                 } else {
-                    call.respond(HttpStatusCode.Conflict)
+                    call.respond(Conflict)
                 }
             }
         }

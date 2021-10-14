@@ -9,6 +9,8 @@ import com.androiddevs.data.responses.SimpleResponse
 import io.ktor.application.*
 import io.ktor.features.ContentTransformationException
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -20,18 +22,18 @@ fun Route.userRoute(){
             val request = try {
                 call.receive<UserRequest>()
             } catch(e: ContentTransformationException) {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(BadRequest)
                 return@post
             }
             val userExists = checkIfUserExists(request.email)
             if(!userExists) {
                 if(registerUser(User(request.email, request.password))) {
-                    call.respond(HttpStatusCode.OK, SimpleResponse(true, "Account created successfully"))
+                    call.respond(OK, SimpleResponse(true, "Account created successfully"))
                 } else {
-                    call.respond(HttpStatusCode.OK, SimpleResponse(false, "Error during creating account"))
+                    call.respond(OK, SimpleResponse(false, "Error during creating account"))
                 }
             } else {
-                call.respond(HttpStatusCode.OK, SimpleResponse(false, "This email already exists"))
+                call.respond(OK, SimpleResponse(false, "This email already exists"))
             }
         }
     }
@@ -41,14 +43,14 @@ fun Route.userRoute(){
             val request = try {
                 call.receive<UserRequest>()
             } catch(e: ContentTransformationException) {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(BadRequest)
                 return@post
             }
             val isPasswordCorrect = checkPasswordForEmail(request.email, request.password)
             if(isPasswordCorrect) {
-                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Logged in successfully"))
+                call.respond(OK, SimpleResponse(true, "Logged in successfully"))
             } else {
-                call.respond(HttpStatusCode.OK, SimpleResponse(false, "Invalid email or password"))
+                call.respond(OK, SimpleResponse(false, "Invalid email or password"))
             }
         }
     }

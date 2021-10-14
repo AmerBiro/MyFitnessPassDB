@@ -1,7 +1,6 @@
 package com.androiddevs.data.queries
 
 import com.noteapp.database.collections.Coach
-import com.noteapp.database.collections.Program
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
@@ -11,78 +10,79 @@ import org.litote.kmongo.setValue
 
 private val client = KMongo.createClient().coroutine
 private val database = client.getDatabase("MyFitnessPassMongoDB")
-private val coach = database.getCollection<Coach>()
+private val coaches = database.getCollection<Coach>()
 
-suspend fun createCoach(coach_: Coach): Boolean {
-    return coach.insertOne(coach_).wasAcknowledged()
+suspend fun createCoach(coach: Coach): Boolean {
+    return coaches.insertOne(coach).wasAcknowledged()
 }
 
-suspend fun updateCoach(coach_: Coach): Boolean {
-    val coachExists = coach.findOneById(coach_.id) != null
+suspend fun updateCoach(coach: Coach): Boolean {
+    val coachExists = coaches.findOneById(coach.id) != null
     if (coachExists) {
-        return coach.updateOneById(coach_.id, coach_).wasAcknowledged()
+        return coaches.updateOneById(coach.id, coach).wasAcknowledged()
     }
     return false
 }
 
-suspend fun isOwnerCoach(coachId: String, email: String): Boolean{
-    val coach_ = coach.findOneById(coachId) ?: return false
-    return coach_.owner == email
+suspend fun getCoaches(parent: String): List<Coach> {
+    return coaches.find(Coach::parent eq parent).toList()
+}
+
+suspend fun isCoachOwner(coachId: String, owner: String): Boolean{
+    val coach = coaches.findOneById(coachId) ?: return false
+    return coach.owner == owner
 }
 
 suspend fun isCoachAlreadyShared(coachId: String, email: String): Boolean{
-    val coach_ = coach.findOneById(coachId)?: return true
-    return email in coach_.hasAccess
+    val coach = coaches.findOneById(coachId)?: return true
+    return email in coach.hasAccess
 }
 
 suspend fun shareCoachWithOthers(coachId: String, email: String): Boolean {
-    val hasAccess = coach.findOneById(coachId)?.hasAccess ?: return false
-    return coach.updateOneById(coachId, setValue(Coach::hasAccess, hasAccess + email)).wasAcknowledged()
+    val hasAccess = coaches.findOneById(coachId)?.hasAccess ?: return false
+    return coaches.updateOneById(coachId, setValue(Coach::hasAccess, hasAccess + email)).wasAcknowledged()
 }
 
-suspend fun getOwnCoach(owner: String): List<Coach> {
-    return coach.find(Coach::owner eq owner).toList()
-}
 
-suspend fun getCoachSharedWIthMe(email: String): List<Coach> {
-    return coach.find(Coach::hasAccess contains email).toList()
+suspend fun getCoachesSharedWIthMe(email: String): List<Coach> {
+    return coaches.find(Coach::hasAccess contains email).toList()
 }
 
 
 suspend fun deleteCoach(coachId: String): Boolean {
-    val coach_ = coach.findOne(Coach::id eq coachId)
-    coach_?.let { coach_ ->
-        return coach.deleteOneById(coach_.id).wasAcknowledged()
+    val coach = coaches.findOne(Coach::id eq coachId)
+    coach?.let { coach ->
+        return coaches.deleteOneById(coach.id).wasAcknowledged()
     } ?: return false
 }
 
 suspend fun removeCoachFromSharedWithMeList(coachId: String, email: String): Boolean {
-    val coach_ = coach.findOne(Coach::id eq coachId, Coach::hasAccess contains email)
+    val coach_ = coaches.findOne(Coach::id eq coachId, Coach::hasAccess contains email)
     coach_?.let { coach_ ->
         val newHasAccess = coach_.hasAccess - email
-        val updateResult = coach.updateOne(Coach::id eq coach_.id, setValue(Coach::hasAccess, newHasAccess))
+        val updateResult = coaches.updateOne(Coach::id eq coach_.id, setValue(Coach::hasAccess, newHasAccess))
         return updateResult.wasAcknowledged()
     } ?: return false
 }
 
-suspend fun getFavoriteCoach(owner: String): List<Coach> {
-    return coach.find(Coach::owner eq owner, Coach::favoriteStatus eq 1).toList()
+suspend fun getFavoriteCoach(parent: String): List<Coach> {
+    return coaches.find(Coach::owner eq parent, Coach::favoriteStatus eq 1).toList()
 }
 
 suspend fun addCoachToFavorite(coachId: String): Boolean {
-    val coach_ = coach.findOne(Coach::id eq coachId, Coach::favoriteStatus ne 1)
-    coach_?.let { coach_ ->
+    val coach = coaches.findOne(Coach::id eq coachId, Coach::favoriteStatus ne 1)
+    coach?.let { coach ->
         val newFavoriteStatus = 1
-        val updateResult = coach.updateOne(Coach::id eq coach_.id, setValue(Coach::favoriteStatus, newFavoriteStatus))
+        val updateResult = coaches.updateOne(Coach::id eq coach.id, setValue(Coach::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()
     } ?: return false
 }
 
 suspend fun removeCoachFromFavorite(coachId: String): Boolean {
-    val coach_ = coach.findOne(Coach::id eq coachId, Coach::favoriteStatus ne 0)
-    coach_?.let { coach_ ->
+    val coach = coaches.findOne(Coach::id eq coachId, Coach::favoriteStatus ne 0)
+    coach?.let { coach ->
         val newFavoriteStatus = 0
-        val updateResult = coach.updateOne(Coach::id eq coach_.id, setValue(Coach::favoriteStatus, newFavoriteStatus))
+        val updateResult = coaches.updateOne(Coach::id eq coach.id, setValue(Coach::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()
     } ?: return false
 }

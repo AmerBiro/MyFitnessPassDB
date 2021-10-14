@@ -15,7 +15,10 @@ data class Exercise(
      val videoURL: String,
      val creationDate: Long,
      val lastUpdateDate: Long,
-     val ownersId: List<String>,
+     val hasAccess: List<String>,
+     val parent: String,
+     val owner: String,
+     val favoriteStatus: Int,
      @BsonId
      val id: String = ObjectId().toString()
 )
