@@ -16,16 +16,16 @@ suspend fun createCoach(coach: Coach): Boolean {
     return coaches.insertOne(coach).wasAcknowledged()
 }
 
+suspend fun getCoaches(parent: String): List<Coach> {
+    return coaches.find(Coach::parent eq parent).toList()
+}
+
 suspend fun updateCoach(coach: Coach): Boolean {
     val coachExists = coaches.findOneById(coach.id) != null
     if (coachExists) {
         return coaches.updateOneById(coach.id, coach).wasAcknowledged()
     }
     return false
-}
-
-suspend fun getCoaches(parent: String): List<Coach> {
-    return coaches.find(Coach::parent eq parent).toList()
 }
 
 suspend fun isCoachOwner(coachId: String, owner: String): Boolean{
@@ -43,17 +43,8 @@ suspend fun shareCoachWithOthers(coachId: String, email: String): Boolean {
     return coaches.updateOneById(coachId, setValue(Coach::hasAccess, hasAccess + email)).wasAcknowledged()
 }
 
-
 suspend fun getCoachesSharedWIthMe(email: String): List<Coach> {
     return coaches.find(Coach::hasAccess contains email).toList()
-}
-
-
-suspend fun deleteCoach(coachId: String): Boolean {
-    val coach = coaches.findOne(Coach::id eq coachId)
-    coach?.let { coach ->
-        return coaches.deleteOneById(coach.id).wasAcknowledged()
-    } ?: return false
 }
 
 suspend fun removeCoachFromSharedWithMeList(coachId: String, email: String): Boolean {
@@ -65,10 +56,6 @@ suspend fun removeCoachFromSharedWithMeList(coachId: String, email: String): Boo
     } ?: return false
 }
 
-suspend fun getFavoriteCoach(parent: String): List<Coach> {
-    return coaches.find(Coach::owner eq parent, Coach::favoriteStatus eq 1).toList()
-}
-
 suspend fun addCoachToFavorite(coachId: String): Boolean {
     val coach = coaches.findOne(Coach::id eq coachId, Coach::favoriteStatus ne 1)
     coach?.let { coach ->
@@ -78,11 +65,22 @@ suspend fun addCoachToFavorite(coachId: String): Boolean {
     } ?: return false
 }
 
+suspend fun getFavoriteCoach(parent: String): List<Coach> {
+    return coaches.find(Coach::owner eq parent, Coach::favoriteStatus eq 1).toList()
+}
+
 suspend fun removeCoachFromFavorite(coachId: String): Boolean {
     val coach = coaches.findOne(Coach::id eq coachId, Coach::favoriteStatus ne 0)
     coach?.let { coach ->
         val newFavoriteStatus = 0
         val updateResult = coaches.updateOne(Coach::id eq coach.id, setValue(Coach::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()
+    } ?: return false
+}
+
+suspend fun deleteCoach(coachId: String): Boolean {
+    val coach = coaches.findOne(Coach::id eq coachId)
+    coach?.let { coach ->
+        return coaches.deleteOneById(coach.id).wasAcknowledged()
     } ?: return false
 }

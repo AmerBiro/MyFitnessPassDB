@@ -15,15 +15,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.coachRoutes() {
-    route("/getCoaches") {
-        authenticate {
-            get {
-                val parent = call.principal<UserIdPrincipal>()!!.name
-                val getCoaches = getCoaches(parent)
-                call.respond(OK, getCoaches)
-            }
-        }
-    }
 
     route("/createCoach"){
         authenticate {
@@ -39,6 +30,16 @@ fun Route.coachRoutes() {
                 }else{
                     call.respond(Conflict)
                 }
+            }
+        }
+    }
+
+    route("/getCoaches") {
+        authenticate {
+            get {
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val getCoaches = getCoaches(parent)
+                call.respond(OK, getCoaches)
             }
         }
     }
@@ -60,19 +61,6 @@ fun Route.coachRoutes() {
             }
         }
     }
-
-    route("/getCoachesSharedWIthMe") {
-        authenticate {
-            get {
-                val email = call.principal<UserIdPrincipal>()!!.name
-
-                val sharedCoachWIthMe = getCoachesSharedWIthMe(email)
-                call.respond(OK, sharedCoachWIthMe)
-            }
-        }
-    }
-
-
 
     route("/shareCoachWithOthers") {
         authenticate {
@@ -104,6 +92,17 @@ fun Route.coachRoutes() {
         }
     }
 
+    route("/getCoachesSharedWIthMe") {
+        authenticate {
+            get {
+                val email = call.principal<UserIdPrincipal>()!!.name
+
+                val sharedCoachWIthMe = getCoachesSharedWIthMe(email)
+                call.respond(OK, sharedCoachWIthMe)
+            }
+        }
+    }
+
     route("/removeCoachFromSharedWithMeList") {
         authenticate {
             post {
@@ -123,17 +122,6 @@ fun Route.coachRoutes() {
         }
     }
 
-    route("/getFavoriteCoaches") {
-        authenticate {
-            get {
-                val parent = call.principal<UserIdPrincipal>()!!.name
-
-                val favoriteCoach = getFavoriteCoach(parent)
-                call.respond(OK, favoriteCoach)
-            }
-        }
-    }
-
     route("/addCoachToFavorite") {
         authenticate {
             post {
@@ -148,6 +136,17 @@ fun Route.coachRoutes() {
                 } else {
                     call.respond(Conflict)
                 }
+            }
+        }
+    }
+
+    route("/getFavoriteCoaches") {
+        authenticate {
+            get {
+                val parent = call.principal<UserIdPrincipal>()!!.name
+
+                val favoriteCoach = getFavoriteCoach(parent)
+                call.respond(OK, favoriteCoach)
             }
         }
     }

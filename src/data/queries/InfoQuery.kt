@@ -13,6 +13,10 @@ suspend fun createInfo(info_: Info): Boolean {
     return info.insertOne(info_).wasAcknowledged()
 }
 
+suspend fun getInfo(owner: String): List<Info> {
+    return info.find(Info::owner eq owner).toList()
+}
+
 suspend fun updateInfo(info_: Info): Boolean {
     val infoExists = info.findOneById(info_.id) != null
     if (infoExists) {
@@ -21,6 +25,3 @@ suspend fun updateInfo(info_: Info): Boolean {
     return false
 }
 
-suspend fun getOwnInfo(owner: String): List<Info> {
-    return info.find(Info::owner eq owner).toList()
-}

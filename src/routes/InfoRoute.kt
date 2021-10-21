@@ -4,7 +4,6 @@ import com.androiddevs.data.queries.*
 import com.noteapp.database.collections.Info
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Conflict
 import io.ktor.http.HttpStatusCode.Companion.OK
@@ -13,15 +12,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.infoRoutes() {
-    route("/getOwnInfo") {
-        authenticate {
-            get {
-                val parent = call.principal<UserIdPrincipal>()!!.name
-                val info = getOwnInfo(parent)
-                call.respond(OK, info)
-            }
-        }
-    }
 
     route("/createInfo"){
         authenticate {
@@ -37,6 +27,16 @@ fun Route.infoRoutes() {
                 }else{
                     call.respond(Conflict)
                 }
+            }
+        }
+    }
+
+    route("/getInfo") {
+        authenticate {
+            get {
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val info = getInfo(parent)
+                call.respond(OK, info)
             }
         }
     }
@@ -58,4 +58,5 @@ fun Route.infoRoutes() {
             }
         }
     }
+
 }

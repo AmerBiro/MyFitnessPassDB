@@ -41,18 +41,8 @@ suspend fun shareProgramWithOthers(programId: String, email: String): Boolean {
     return programs.updateOneById(programId, setValue(Program::hasAccess, hasAccess + email)).wasAcknowledged()
 }
 
-
-
 suspend fun getProgramsSharedWIthMe(email: String): List<Program> {
     return programs.find(Program::hasAccess contains email).toList()
-}
-
-
-suspend fun deleteProgram(programId: String): Boolean {
-    val program = programs.findOne(Program::id eq programId)
-    program?.let { program ->
-        return programs.deleteOneById(program.id).wasAcknowledged()
-    } ?: return false
 }
 
 suspend fun removeProgramFromSharedWithMeList(programId: String, email: String): Boolean {
@@ -64,10 +54,6 @@ suspend fun removeProgramFromSharedWithMeList(programId: String, email: String):
     } ?: return false
 }
 
-suspend fun getFavoritePrograms(parent: String): List<Program> {
-    return programs.find(Program::parent eq parent, Program::favoriteStatus eq 1).toList()
-}
-
 suspend fun addProgramToFavorite(programId: String): Boolean {
     val program = programs.findOne(Program::id eq programId, Program::favoriteStatus ne 1)
     program?.let { program ->
@@ -77,11 +63,22 @@ suspend fun addProgramToFavorite(programId: String): Boolean {
     } ?: return false
 }
 
+suspend fun getFavoritePrograms(parent: String): List<Program> {
+    return programs.find(Program::parent eq parent, Program::favoriteStatus eq 1).toList()
+}
+
 suspend fun removeProgramFromFavorite(programId: String): Boolean {
     val program = programs.findOne(Program::id eq programId, Program::favoriteStatus ne 0)
     program?.let { program ->
         val newFavoriteStatus = 0
         val updateResult = programs.updateOne(Program::id eq program.id, setValue(Program::favoriteStatus, newFavoriteStatus))
         return updateResult.wasAcknowledged()
+    } ?: return false
+}
+
+suspend fun deleteProgram(programId: String): Boolean {
+    val program = programs.findOne(Program::id eq programId)
+    program?.let { program ->
+        return programs.deleteOneById(program.id).wasAcknowledged()
     } ?: return false
 }

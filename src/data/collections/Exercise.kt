@@ -19,6 +19,7 @@ data class Exercise(
      val parent: String,
      val owner: String,
      val favoriteStatus: Int,
+     val type:String,
      @BsonId
      val id: String = ObjectId().toString()
 )

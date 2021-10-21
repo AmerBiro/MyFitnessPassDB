@@ -89,3 +89,8 @@ suspend fun removeExerciseFromFavorite(exerciseId: String): Boolean {
         return updateResult.wasAcknowledged()
     } ?: return false
 }
+
+//suspend fun exercisesType(email: String, type: String): List<Exercise>{
+//    return exercises.find(Exercise::owner eq email, Exercise::type eq type).toList()
+//}
+

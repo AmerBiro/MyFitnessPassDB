@@ -15,16 +15,6 @@ import io.ktor.routing.*
 
 fun Route.fitnessRoutes() {
 
-    route("/getFitness") {
-        authenticate {
-            get {
-                val parent = call.principal<UserIdPrincipal>()!!.name
-                val fitness = getFitness(parent)
-                call.respond(OK, fitness)
-            }
-        }
-    }
-
     route("/createFitness"){
         authenticate {
             post {
@@ -39,6 +29,16 @@ fun Route.fitnessRoutes() {
                 }else{
                     call.respond(Conflict)
                 }
+            }
+        }
+    }
+
+    route("/getFitness") {
+        authenticate {
+            get {
+                val parent = call.principal<UserIdPrincipal>()!!.name
+                val fitness = getFitness(parent)
+                call.respond(OK, fitness)
             }
         }
     }
